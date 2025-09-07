@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت جامع</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
+        body { font-family: 'Vazirmatn', sans-serif; background-color: #f1f5f9; }
+        .sidebar-link { transition: all 0.2s ease-in-out; }
+        .sidebar-link:hover, .sidebar-link.active { background-color: #4338ca; color: white; }
+        .form-input { transition: all 0.2s ease; }
+        .form-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3); }
+        .btn { transition: background-color 0.2s ease; }
+        .toggle-checkbox:checked + .toggle-label .toggle-dot { transform: translateX(100%); background-color: #4f46e5; }
+        .toggle-checkbox:checked + .toggle-label .toggle-bg { background-color: #a5b4fc; }
+        .toggle-dot { transition: transform 0.2s ease-in-out; }
+    </style>
+</head>
+<body class="bg-slate-100">
+
+    <div id="login-overlay" class="fixed inset-0 bg-slate-200 bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm">
+            <h2 class="text-2xl font-bold text-center text-slate-800 mb-6">ورود به پنل مدیریت</h2>
+            <form id="login-form">
+                <div class="space-y-4">
+                    <input type="text" id="username" placeholder="نام کاربری" class="w-full p-3 border rounded-md form-input bg-slate-50" required>
+                    <input type="password" id="password" placeholder="رمز عبور" class="w-full p-3 border rounded-md form-input bg-slate-50" required>
+                    <p id="login-error" class="text-red-500 text-sm text-center hidden">نام کاربری یا رمز عبور اشتباه است.</p>
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 btn font-bold">ورود</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden">
+        <div class="flex h-screen">
+            <aside class="bg-indigo-700 text-indigo-100 w-64 space-y-6 py-7 px-4 fixed top-0 right-0 h-full shadow-lg">
+                <a href="#" class="text-white flex items-center space-x-2 px-4">
+                    <i class="fas fa-book-reader text-3xl"></i>
+                    <span class="text-2xl font-bold">پنل مدیریت</span>
+                </a>
+                <nav class="mt-10">
+                    <a href="#" id="nav-books" class="sidebar-link active flex items-center py-3 px-4 rounded">
+                        <i class="fas fa-book ml-3"></i> مدیریت کتاب‌ها
+                    </a>
+                    <a href="#" id="nav-posts" class="sidebar-link flex items-center py-3 px-4 rounded mt-2">
+                        <i class="fas fa-newspaper ml-3"></i> مدیریت وبلاگ
+                    </a>
+                     <a href="#" id="logout-btn" class="sidebar-link flex items-center py-3 px-4 rounded mt-8 absolute bottom-4 right-4 left-4">
+                        <i class="fas fa-sign-out-alt ml-3"></i> خروج از حساب
+                    </a>
+                </nav>
+            </aside>
+
+            <div class="flex-1 flex flex-col overflow-hidden mr-64">
+                <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+                    <div id="books-section">
+                        <h1 class="text-3xl font-bold text-slate-800 mb-6">مدیریت کتاب‌ها</h1>
+                        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                            <div class="xl:col-span-1">
+                                <div class="bg-white p-6 rounded-xl shadow-md">
+                                    <h2 id="book-form-title" class="text-2xl font-bold mb-6 text-gray-800">افزودن کتاب جدید</h2>
+                                    <form id="book-form" class="space-y-4"></form>
+                                </div>
+                            </div>
+                            <div id="books-list" class="xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-min"></div>
+                        </div>
+                    </div>
+
+                    <div id="posts-section" class="hidden">
+                        <h1 class="text-3xl font-bold text-slate-800 mb-6">مدیریت وبلاگ</h1>
+                        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                            <div class="xl:col-span-1">
+                                <div class="bg-white p-6 rounded-xl shadow-md">
+                                    <h2 id="post-form-title" class="text-2xl font-bold mb-6 text-gray-800">افزودن پست جدید</h2>
+                                    <form id="post-form" class="space-y-4"></form>
+                                </div>
+                            </div>
+                            <div id="posts-list" class="xl:col-span-2 grid grid-cols-1 md:grid-cols-1 gap-6 auto-rows-min"></div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000';
+        let currentView = 'books';
+        const CORRECT_USERNAME = 'admin';
+        const CORRECT_PASSWORD = 'password123';
+
+        const DOMElements = {
+            loginOverlay: document.getElementById('login-overlay'),
+            mainApp: document.getElementById('main-app'),
+            loginForm: document.getElementById('login-form'),
+            logoutBtn: document.getElementById('logout-btn'),
+            loginError: document.getElementById('login-error'),
+            navBooks: document.getElementById('nav-books'),
+            navPosts: document.getElementById('nav-posts'),
+            booksSection: document.getElementById('books-section'),
+            postsSection: document.getElementById('posts-section'),
+            bookForm: document.getElementById('book-form'),
+            postForm: document.getElementById('post-form'),
+            booksList: document.getElementById('books-list'),
+            postsList: document.getElementById('posts-list'),
+            bookFormTitle: document.getElementById('book-form-title'),
+            postFormTitle: document.getElementById('post-form-title'),
+        };
+
+        const checkAuth = () => {
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                DOMElements.loginOverlay.classList.add('hidden');
+                DOMElements.mainApp.classList.remove('hidden');
+                loadInitialData();
+            } else {
+                DOMElements.loginOverlay.classList.remove('hidden');
+                DOMElements.mainApp.classList.add('hidden');
+            }
+        };
+
+        DOMElements.loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
+                localStorage.setItem('isLoggedIn', 'true');
+                DOMElements.loginError.classList.add('hidden');
+                checkAuth();
+            } else {
+                DOMElements.loginError.classList.remove('hidden');
+            }
+        });
+
+        DOMElements.logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('isLoggedIn');
+            location.reload();
+        });
+
+        const fetchData = async (endpoint) => {
+            try {
+                const response = await fetch(`${BASE_URL}/${endpoint}?_admin=true`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error(`Fetch error from ${endpoint}:`, error);
+                return [];
+            }
+        };
+
+        const deleteItem = async (endpoint, id) => {
+            if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
+            try {
+                await fetch(`${BASE_URL}/${endpoint}/${id}`, { method: 'DELETE' });
+                loadInitialData();
+            } catch (error) { console.error('Delete error:', error); }
+        };
+
+        window.toggleStatus = async (endpoint, id, currentStatus) => {
+            try {
+                await fetch(`${BASE_URL}/${endpoint}/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isActive: !currentStatus })
+                });
+                loadInitialData();
+            } catch (error) { console.error('Toggle status error:', error); }
+        };
+
+        const switchView = (view) => {
+            currentView = view;
+            const isBooks = view === 'books';
+            DOMElements.booksSection.classList.toggle('hidden', !isBooks);
+            DOMElements.postsSection.classList.toggle('hidden', isBooks);
+            DOMElements.navBooks.classList.toggle('active', isBooks);
+            DOMElements.navPosts.classList.toggle('active', !isBooks);
+            loadInitialData();
+        };
+
+        DOMElements.navBooks.addEventListener('click', () => switchView('books'));
+        DOMElements.navPosts.addEventListener('click', () => switchView('posts'));
+
+        const createFormFields = (fields) => fields.map(f => {
+            if (f.type === 'textarea') {
+                return `<textarea id="${f.id}" placeholder="${f.placeholder}" rows="${f.rows || 4}" class="w-full p-3 border rounded-md form-input bg-slate-50"></textarea>`;
+            }
+            return `<input type="${f.type || 'text'}" id="${f.id}" placeholder="${f.placeholder}" class="w-full p-3 border rounded-md form-input bg-slate-50" ${f.required ? 'required' : ''}>`;
+        }).join('');
+
+        const renderBookForm = (book = {}) => {
+            DOMElements.bookForm.innerHTML = `
+                <input type="hidden" id="book-id" value="${book.id || ''}">
+                ${createFormFields([
+                    {id: 'book-title', placeholder: 'عنوان کتاب', required: true},
+                    {id: 'book-author', placeholder: 'نویسنده', required: true},
+                    {id: 'book-category', placeholder: 'دسته‌بندی'},
+                    {id: 'book-price', placeholder: 'قیمت (تومان)', type: 'number'},
+                    {id: 'book-coverImage', placeholder: 'آدرس عکس جلد (URL)', type: 'url'},
+                    {id: 'book-description', placeholder: 'توضیحات...', type: 'textarea'},
+                ])}
+                <div class="flex items-center gap-4 pt-2">
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 btn font-bold">${book.id ? 'ذخیره تغییرات' : 'افزودن کتاب'}</button>
+                    ${book.id ? '<button type="button" id="book-cancel-btn" class="w-full bg-slate-500 text-white p-3 rounded-md hover:bg-slate-600 btn font-bold">انصراف</button>' : ''}
+                </div>`;
+
+            if(book.id) {
+                document.getElementById('book-title').value = book.title || '';
+                document.getElementById('book-author').value = book.author || '';
+                document.getElementById('book-category').value = book.category || '';
+                document.getElementById('book-price').value = book.price || '';
+                document.getElementById('book-coverImage').value = book.coverImage || '';
+                document.getElementById('book-description').value = book.description || '';
+                DOMElements.bookFormTitle.textContent = 'ویرایش کتاب';
+                document.getElementById('book-cancel-btn').addEventListener('click', () => {
+                    DOMElements.bookFormTitle.textContent = 'افزودن کتاب جدید';
+                    renderBookForm();
+                });
+            }
+        };
+        
+        const renderPostForm = (post = {}) => {
+             DOMElements.postForm.innerHTML = `
+                <input type="hidden" id="post-id" value="${post.id || ''}">
+                ${createFormFields([
+                    {id: 'post-title', placeholder: 'عنوان پست', required: true},
+                    {id: 'post-author', placeholder: 'نویسنده', required: true},
+                    {id: 'post-coverImage', placeholder: 'آدرس عکس کاور (URL)', type: 'url'},
+                    {id: 'post-content', placeholder: 'محتوای پست...', type: 'textarea', rows: 6},
+                ])}
+                <div class="flex items-center gap-4 pt-2">
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 btn font-bold">${post.id ? 'ذخیره تغییرات' : 'افزودن پست'}</button>
+                    ${post.id ? '<button type="button" id="post-cancel-btn" class="w-full bg-slate-500 text-white p-3 rounded-md hover:bg-slate-600 btn font-bold">انصراف</button>' : ''}
+                </div>`;
+            
+            if(post.id) {
+                document.getElementById('post-title').value = post.title || '';
+                document.getElementById('post-author').value = post.author || '';
+                document.getElementById('post-coverImage').value = post.coverImage || '';
+                document.getElementById('post-content').value = post.content || '';
+                DOMElements.postFormTitle.textContent = 'ویرایش پست';
+                 document.getElementById('post-cancel-btn').addEventListener('click', () => {
+                    DOMElements.postFormTitle.textContent = 'افزودن پست جدید';
+                    renderPostForm();
+                });
+            }
+        };
+
+        const renderBooks = (books) => {
+            DOMElements.booksList.innerHTML = books.map(book => {
+                const priceText = (book.price == null || book.price === 0) 
+                    ? '<span class="font-bold text-green-600">رایگان</span>' 
+                    : `<span class="font-bold text-indigo-600">${Number(book.price).toLocaleString('fa-IR')} تومان</span>`;
+                return `
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
+                        <div class="p-4 flex flex-col flex-grow">
+                             <img src="${book.coverImage || 'https://placehold.co/400x600/E2E8F0/A0AEC0?text=Book'}" class="w-full h-48 object-cover rounded-md mb-4">
+                            <span class="text-sm text-slate-500">${book.category || 'بدون دسته‌بندی'}</span>
+                            <h3 class="text-xl font-bold text-slate-800 mt-1">${book.title}</h3>
+                            <p class="text-slate-600 mt-1">${book.author}</p>
+                            <p class="text-sm text-slate-700 mt-2 flex-grow">${book.description || 'توضیحات موجود نیست.'}</p>
+                            <div class="mt-4 flex justify-between items-center">
+                                ${priceText}
+                                <div class="flex gap-3">
+                                    <button onclick="editBook('${book.id}')" class="text-blue-500 hover:text-blue-700"><i class="fas fa-pencil-alt"></i></button>
+                                    <button onclick="deleteItem('books', '${book.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-3 border-t flex justify-center items-center gap-4">
+                             <span class="text-sm font-medium text-slate-600">${book.isActive ? 'فعال (نمایش در سایت)' : 'غیرفعال (مخفی)'}</span>
+                             <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only toggle-checkbox" ${book.isActive ? 'checked' : ''} onchange="toggleStatus('books', '${book.id}', ${book.isActive})">
+                                <div class="toggle-label w-11 h-6 bg-slate-300 rounded-full toggle-bg"><div class="absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 toggle-dot"></div></div>
+                            </label>
+                        </div>
+                    </div>`;
+            }).join('');
+            if (books.length === 0) DOMElements.booksList.innerHTML = '<p class="text-slate-500 col-span-full">کتابی برای نمایش وجود ندارد.</p>';
+        };
+        
+        const renderPosts = (posts) => {
+            DOMElements.postsList.innerHTML = posts.map(post => `
+                <div class="bg-white rounded-xl shadow-md overflow-hidden"><div class="md:flex">
+                    <div class="md:shrink-0"><img src="${post.coverImage || 'https://placehold.co/800x400/E2E8F0/A0AEC0?text=Blog'}" class="h-48 w-full object-cover md:h-full md:w-48"></div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-bold text-slate-800">${post.title}</h3>
+                        <p class="text-sm text-slate-500 mt-1">نویسنده: ${post.author} | تاریخ: ${new Date(post.publishDate).toLocaleDateString('fa-IR')}</p>
+                        <p class="text-slate-700 mt-2 flex-grow">${(post.content || '').substring(0, 150)}...</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <span class="text-sm font-medium text-slate-600">${post.isActive ? 'فعال' : 'غیرفعال'}</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only toggle-checkbox" ${post.isActive ? 'checked' : ''} onchange="toggleStatus('posts', '${post.id}', ${post.isActive})">
+                                    <div class="toggle-label w-11 h-6 bg-slate-300 rounded-full toggle-bg"><div class="absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full h-5 w-5 toggle-dot"></div></div>
+                                </label>
+                            </div>
+                            <div class="flex justify-end gap-3">
+                                <button onclick="editPost('${post.id}')" class="text-blue-500 hover:text-blue-700"><i class="fas fa-pencil-alt"></i></button>
+                                <button onclick="deleteItem('posts', '${post.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div></div>`).join('');
+            if (posts.length === 0) DOMElements.postsList.innerHTML = '<p class="text-slate-500 col-span-full">پستی برای نمایش وجود ندارد.</p>';
+        };
+
+        DOMElements.bookForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('book-id').value;
+            const bookData = {
+                title: document.getElementById('book-title').value,
+                author: document.getElementById('book-author').value,
+                category: document.getElementById('book-category').value,
+                price: document.getElementById('book-price').value,
+                coverImage: document.getElementById('book-coverImage').value,
+                description: document.getElementById('book-description').value,
+            };
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${BASE_URL}/books/${id}` : `${BASE_URL}/books`;
+            try {
+                await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bookData) });
+                DOMElements.bookFormTitle.textContent = 'افزودن کتاب جدید';
+                renderBookForm();
+                loadInitialData();
+            } catch (error) { console.error('Book submit error:', error); }
+        });
+        
+        window.editBook = async (id) => {
+            const book = await fetchData(`books/${id}`);
+            if (book) renderBookForm(book);
+        };
+        
+        DOMElements.postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('post-id').value;
+            const postData = {
+                title: document.getElementById('post-title').value,
+                author: document.getElementById('post-author').value,
+                coverImage: document.getElementById('post-coverImage').value,
+                content: document.getElementById('post-content').value,
+            };
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${BASE_URL}/posts/${id}` : `${BASE_URL}/posts`;
+            try {
+                await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(postData) });
+                DOMElements.postFormTitle.textContent = 'افزودن پست جدید';
+                renderPostForm();
+                loadInitialData();
+            } catch (error) { console.error('Post submit error:', error); }
+        });
+
+        window.editPost = async (id) => {
+            const post = await fetchData(`posts/${id}`);
+            if(post) renderPostForm(post);
+        };
+
+        const loadInitialData = async () => {
+            if (currentView === 'books') {
+                const books = await fetchData('books');
+                renderBooks(books);
+            } else {
+                const posts = await fetchData('posts');
+                renderPosts(posts);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBookForm();
+            renderPostForm();
+            checkAuth();
+        });
+    </script>
+</body>
+</html>
+
