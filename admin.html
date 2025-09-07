@@ -1,39 +1,118 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+        body { font-family: 'Vazirmatn', sans-serif; }
+        .sidebar-link.active { background-color: #4f46e5; color: white; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200">
+
+    <div id="login-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-sm">
+            <h2 class="text-2xl font-bold text-center text-slate-200 mb-6">ورود به پنل مدیریت</h2>
+            <form id="login-form">
+                <div class="space-y-4">
+                    <input type="text" id="username" placeholder="نام کاربری" class="w-full p-3 border rounded-md bg-slate-700 border-slate-600 text-white" required>
+                    <input type="password" id="password" placeholder="رمز عبور" class="w-full p-3 border rounded-md bg-slate-700 border-slate-600 text-white" required>
+                    <p id="login-error" class="text-red-500 text-sm text-center hidden">نام کاربری یا رمز عبور اشتباه است.</p>
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 font-bold">ورود</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden">
+        <div class="flex h-screen">
+            <aside class="bg-slate-800 text-slate-300 w-64 p-4">
+                <h1 class="text-2xl font-bold text-white mb-8">پنل مدیریت</h1>
+                <nav>
+                    <a href="#" id="nav-books" class="sidebar-link block py-2.5 px-4 rounded transition duration-200">مدیریت کتاب‌ها</a>
+                    <a href="#" id="nav-posts" class="sidebar-link block py-2.5 px-4 rounded transition duration-200">مدیریت وبلاگ</a>
+                </nav>
+            </aside>
+            <main class="flex-1 p-8 overflow-y-auto">
+                <div id="books-section">
+                    <h2 class="text-3xl font-bold mb-6">مدیریت کتاب‌ها</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div>
+                            <h3 id="book-form-title" class="text-2xl font-bold mb-4">افزودن کتاب جدید</h3>
+                            <form id="book-form" class="space-y-4 bg-slate-800 p-6 rounded-lg"></form>
+                        </div>
+                        <div id="books-list" class="md:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+                    </div>
+                </div>
+                <div id="posts-section" class="hidden">
+                    <h2 class="text-3xl font-bold mb-6">مدیریت وبلاگ</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                         <div>
+                            <h3 id="post-form-title" class="text-2xl font-bold mb-4">افزودن پست جدید</h3>
+                            <form id="post-form" class="space-y-4 bg-slate-800 p-6 rounded-lg"></form>
+                        </div>
+                        <div id="posts-list" class="md:col-span-2 space-y-6"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE_URL = 'https://backend-7cdz.onrender.com/api';
     const BOOKS_ENDPOINT = `${API_BASE_URL}/books`;
     const POSTS_ENDPOINT = `${API_BASE_URL}/posts`;
-    // ... بقیه متغیرها ...
+    const CORRECT_USERNAME = 'admin';
+    const CORRECT_PASSWORD = 'password123';
 
-    // ... توابع دیگر ...
+    const DOMElements = { /* ... */ }; // All your element getters here
 
-    const renderBooks = (books) => {
-        DOMElements.booksList.innerHTML = books.map(book => {
-            // ...
-            return `
-                <div class="bg-white dark:bg-slate-800 ...">
-                    <div class="bg-slate-50 dark:bg-slate-700 ...">
-                        <span class="...">${book.isActive ? 'فعال' : 'غیرفعال'}</span>
-                        <label class="..."><input type="checkbox" ... ${book.isActive ? 'checked' : ''} onchange="toggleStatus('books', '${book.id}', ${book.isActive})">...</label>
-                    </div>
-                </div>`;
-        }).join('');
-        // ...
-    };
+    // All functions (checkAuth, fetchData, renderBooks, renderPosts, etc.)
+    // should be placed here, ensuring they are complete and correct.
     
-    const renderPosts = (posts) => {
-        DOMElements.postsList.innerHTML = posts.map(post => `
-            <div class="bg-white dark:bg-slate-800 ...">
-                <span class="...">${post.isActive ? 'فعال' : 'غیرفعال'}</span>
-                <label class="..."><input type="checkbox" ... ${post.isActive ? 'checked' : ''} onchange="toggleStatus('posts', '${post.id}', ${post.isActive})">...</label>
-            </div>
-        `).join('');
-        // ...
-    };
-    
-    // ... بقیه کدهای شما ...
+    // Example of a correct submit handler
+    DOMElements.bookForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('book-id').value;
+        const bookData = {
+            title: document.getElementById('book-title').value,
+            author: document.getElementById('book-author').value,
+            category: document.getElementById('book-category').value,
+            price: parseFloat(document.getElementById('book-price').value) || null,
+            coverImage: document.getElementById('book-coverImage').value,
+            description: document.getElementById('book-description').value,
+        };
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${BOOKS_ENDPOINT}/${id}` : BOOKS_ENDPOINT;
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bookData)
+            });
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}`);
+            }
+            DOMElements.bookForm.reset();
+            DOMElements.bookFormTitle.textContent = 'افزودن کتاب جدید';
+            document.getElementById('book-id').value = '';
+            loadInitialData();
+        } catch (error) {
+            console.error('Submit error:', error);
+            alert('خطا در ثبت کتاب!');
+        }
+    });
+
+    // Initial calls
+    renderBookForm();
+    renderPostForm();
+    checkAuth();
 });
 </script>
 </body>
