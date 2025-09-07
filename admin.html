@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,23 +8,27 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
-        body { font-family: 'Vazirmatn', sans-serif; background-color: #f1f5f9; }
+        body { font-family: 'Vazirmatn', sans-serif; }
+        .dark body { background-color: #0f172a; }
         .sidebar-link { transition: all 0.2s ease-in-out; }
-        .sidebar-link:hover, .sidebar-link.active { background-color: #4338ca; color: white; }
+        .sidebar-link:hover, .sidebar-link.active { background-color: #4f46e5; color: white; }
         .form-input { transition: all 0.2s ease; }
         .form-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3); }
         .btn { transition: background-color 0.2s ease; }
+        .toggle-checkbox:checked + .toggle-label .toggle-dot { transform: translateX(100%); background-color: #4f46e5; }
+        .toggle-checkbox:checked + .toggle-label .toggle-bg { background-color: #a5b4fc; }
+        .toggle-dot { transition: transform 0.2s ease-in-out; }
     </style>
 </head>
-<body class="bg-slate-100">
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
 
-    <div id="login-overlay" class="fixed inset-0 bg-slate-200 bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm">
-            <h2 class="text-2xl font-bold text-center text-slate-800 mb-6">ورود به پنل مدیریت</h2>
+    <div id="login-overlay" class="fixed inset-0 bg-slate-200 dark:bg-slate-900 bg-opacity-75 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-2xl w-full max-w-sm">
+            <h2 class="text-2xl font-bold text-center text-slate-800 dark:text-slate-200 mb-6">ورود به پنل مدیریت</h2>
             <form id="login-form">
                 <div class="space-y-4">
-                    <input type="text" id="username" placeholder="نام کاربری" class="w-full p-3 border rounded-md form-input bg-slate-50" required>
-                    <input type="password" id="password" placeholder="رمز عبور" class="w-full p-3 border rounded-md form-input bg-slate-50" required>
+                    <input type="text" id="username" placeholder="نام کاربری" class="w-full p-3 border rounded-md form-input bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-white" required>
+                    <input type="password" id="password" placeholder="رمز عبور" class="w-full p-3 border rounded-md form-input bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-white" required>
                     <p id="login-error" class="text-red-500 text-sm text-center hidden">نام کاربری یا رمز عبور اشتباه است.</p>
                     <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 btn font-bold">ورود</button>
                 </div>
@@ -34,32 +38,32 @@
 
     <div id="main-app" class="hidden">
         <div class="flex h-screen">
-            <aside class="bg-indigo-700 text-indigo-100 w-64 space-y-6 py-7 px-4 fixed top-0 right-0 h-full shadow-lg">
-                <a href="#" class="text-white flex items-center space-x-2 px-4">
+            <aside class="bg-slate-800 text-slate-300 w-64 space-y-6 py-7 px-4 fixed top-0 right-0 h-full shadow-lg">
+                <a href="#" class="text-white flex items-center space-x-2 px-4 rtl:space-x-reverse">
                     <i class="fas fa-book-reader text-3xl"></i>
                     <span class="text-2xl font-bold">پنل مدیریت</span>
                 </a>
                 <nav class="mt-10">
                     <a href="#" id="nav-books" class="sidebar-link active flex items-center py-3 px-4 rounded">
-                        <i class="fas fa-book ml-3"></i> مدیریت کتاب‌ها
+                        <i class="fas fa-book mr-3"></i> مدیریت کتاب‌ها
                     </a>
                     <a href="#" id="nav-posts" class="sidebar-link flex items-center py-3 px-4 rounded mt-2">
-                        <i class="fas fa-newspaper ml-3"></i> مدیریت وبلاگ
+                        <i class="fas fa-newspaper mr-3"></i> مدیریت وبلاگ
                     </a>
                     <a href="#" id="logout-btn" class="sidebar-link flex items-center py-3 px-4 rounded mt-8 absolute bottom-4 right-4 left-4">
-                        <i class="fas fa-sign-out-alt ml-3"></i> خروج از حساب
+                        <i class="fas fa-sign-out-alt mr-3"></i> خروج از حساب
                     </a>
                 </nav>
             </aside>
 
             <div class="flex-1 flex flex-col overflow-hidden mr-64">
-                <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 p-8">
+                <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-100 dark:bg-slate-900 p-8">
                     <div id="books-section">
-                        <h1 class="text-3xl font-bold text-slate-800 mb-6">مدیریت کتاب‌ها</h1>
+                        <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-6">مدیریت کتاب‌ها</h1>
                         <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
                             <div class="xl:col-span-1">
-                                <div class="bg-white p-6 rounded-xl shadow-md">
-                                    <h2 id="book-form-title" class="text-2xl font-bold mb-6 text-gray-800">افزودن کتاب جدید</h2>
+                                <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+                                    <h2 id="book-form-title" class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">افزودن کتاب جدید</h2>
                                     <form id="book-form" class="space-y-4"></form>
                                 </div>
                             </div>
@@ -68,8 +72,17 @@
                     </div>
 
                     <div id="posts-section" class="hidden">
-                        <h1 class="text-3xl font-bold text-slate-800 mb-6">مدیریت وبلاگ</h1>
+                        <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-6">مدیریت وبلاگ</h1>
+                        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                             <div class="xl:col-span-1">
+                                <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+                                    <h2 id="post-form-title" class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">افزودن پست جدید</h2>
+                                    <form id="post-form" class="space-y-4"></form>
+                                </div>
+                            </div>
+                            <div id="posts-list" class="xl:col-span-2 grid grid-cols-1 md:grid-cols-1 gap-6 auto-rows-min"></div>
                         </div>
+                    </div>
                 </main>
             </div>
         </div>
@@ -77,10 +90,9 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- تمام کدهای جاوااسکریپت اینجا قرار می‌گیرند ---
-
         const API_BASE_URL = 'https://backend-7cdz.onrender.com/api';
         const BOOKS_ENDPOINT = `${API_BASE_URL}/books`;
+        const POSTS_ENDPOINT = `${API_BASE_URL}/posts`;
         
         const CORRECT_USERNAME = 'admin';
         const CORRECT_PASSWORD = 'password123';
@@ -96,15 +108,18 @@
             booksSection: document.getElementById('books-section'),
             postsSection: document.getElementById('posts-section'),
             bookForm: document.getElementById('book-form'),
+            postForm: document.getElementById('post-form'),
             booksList: document.getElementById('books-list'),
+            postsList: document.getElementById('posts-list'),
             bookFormTitle: document.getElementById('book-form-title'),
+            postFormTitle: document.getElementById('post-form-title'),
         };
 
         const checkAuth = () => {
             if (localStorage.getItem('isLoggedIn') === 'true') {
                 DOMElements.loginOverlay.classList.add('hidden');
                 DOMElements.mainApp.classList.remove('hidden');
-                loadInitialData();
+                switchView('books');
             } else {
                 DOMElements.loginOverlay.classList.remove('hidden');
                 DOMElements.mainApp.classList.add('hidden');
@@ -132,7 +147,7 @@
 
         const fetchData = async (url) => {
             try {
-                const response = await fetch(url);
+                const response = await fetch(`${url}?_admin=true`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return await response.json();
             } catch (error) {
@@ -141,19 +156,44 @@
             }
         };
         
-        const deleteItem = async (id) => {
-            if (!confirm('آیا از حذف این کتاب اطمینان دارید؟')) return;
+        const deleteItem = async (type, id) => {
+            const endpoint = type === 'books' ? BOOKS_ENDPOINT : POSTS_ENDPOINT;
+            if (!confirm('آیا از حذف این مورد اطمینان دارید؟')) return;
             try {
-                await fetch(`${BOOKS_ENDPOINT}/${id}`, { method: 'DELETE' });
+                await fetch(`${endpoint}/${id}`, { method: 'DELETE' });
                 loadInitialData();
             } catch (error) { console.error('Delete error:', error); }
         };
 
+        window.toggleStatus = async (type, id, currentStatus) => {
+            const endpoint = type === 'books' ? `${BOOKS_ENDPOINT}/${id}/toggle` : `${POSTS_ENDPOINT}/${id}/toggle`;
+            try {
+                await fetch(endpoint, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isActive: !currentStatus })
+                });
+                loadInitialData();
+            } catch (error) { console.error('Toggle status error:', error); }
+        };
+
+        const switchView = (view) => {
+            const isBooks = view === 'books';
+            DOMElements.booksSection.classList.toggle('hidden', !isBooks);
+            DOMElements.postsSection.classList.toggle('hidden', isBooks);
+            DOMElements.navBooks.classList.toggle('active', isBooks);
+            DOMElements.navPosts.classList.toggle('active', !isBooks);
+            loadInitialData();
+        };
+
+        DOMElements.navBooks.addEventListener('click', (e) => { e.preventDefault(); switchView('books'); });
+        DOMElements.navPosts.addEventListener('click', (e) => { e.preventDefault(); switchView('posts'); });
+
         const createFormFields = (fields) => fields.map(f => {
             if (f.type === 'textarea') {
-                return `<textarea id="${f.id}" placeholder="${f.placeholder}" rows="${f.rows || 4}" class="w-full p-3 border rounded-md form-input bg-slate-50"></textarea>`;
+                return `<textarea id="${f.id}" placeholder="${f.placeholder}" rows="${f.rows || 4}" class="w-full p-3 border rounded-md form-input bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-white"></textarea>`;
             }
-            return `<input type="${f.type || 'text'}" id="${f.id}" placeholder="${f.placeholder}" class="w-full p-3 border rounded-md form-input bg-slate-50" ${f.required ? 'required' : ''}>`;
+            return `<input type="${f.type || 'text'}" id="${f.id}" placeholder="${f.placeholder}" class="w-full p-3 border rounded-md form-input bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-white" ${f.required ? 'required' : ''}>`;
         }).join('');
 
         const renderBookForm = (book = {}) => {
@@ -177,7 +217,7 @@
                 document.getElementById('book-author').value = book.author || '';
                 document.getElementById('book-category').value = book.category || '';
                 document.getElementById('book-price').value = book.price || '';
-                document.getElementById('book-coverImage').value = book.coverImage || '';
+                document.getElementById('book-coverImage').value = book.coverimage || '';
                 document.getElementById('book-description').value = book.description || '';
                 DOMElements.bookFormTitle.textContent = 'ویرایش کتاب';
                 document.getElementById('book-cancel-btn').addEventListener('click', () => {
@@ -186,32 +226,85 @@
                 });
             }
         };
+        
+        const renderPostForm = (post = {}) => {
+            DOMElements.postForm.innerHTML = `
+                <input type="hidden" id="post-id" value="${post.id || ''}">
+                ${createFormFields([
+                    {id: 'post-title', placeholder: 'عنوان پست', required: true},
+                    {id: 'post-author', placeholder: 'نویسنده'},
+                    {id: 'post-coverImage', placeholder: 'آدرس عکس کاور (URL)', type: 'url'},
+                    {id: 'post-content', placeholder: 'محتوای پست...', type: 'textarea', rows: 6},
+                ])}
+                <div class="flex items-center gap-4 pt-2">
+                    <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-md hover:bg-indigo-700 btn font-bold">${post.id ? 'ذخیره تغییرات' : 'افزودن پست'}</button>
+                    ${post.id ? '<button type="button" id="post-cancel-btn" class="w-full bg-slate-500 text-white p-3 rounded-md hover:bg-slate-600 btn font-bold">انصراف</button>' : ''}
+                </div>`;
+            
+            if(post.id) {
+                document.getElementById('post-title').value = post.title || '';
+                document.getElementById('post-author').value = post.author || '';
+                document.getElementById('post-coverImage').value = post.coverimage || '';
+                document.getElementById('post-content').value = post.content || '';
+                DOMElements.postFormTitle.textContent = 'ویرایش پست';
+                document.getElementById('post-cancel-btn').addEventListener('click', () => {
+                    DOMElements.postFormTitle.textContent = 'افزودن پست جدید';
+                    renderPostForm();
+                });
+            }
+        };
 
         const renderBooks = (books) => {
-            DOMElements.booksList.innerHTML = books.map(book => {
-                const priceText = (book.price == null || book.price === 0) 
-                    ? `<span class="font-bold text-green-600">رایگان</span>` 
-                    : `<span class="font-bold text-indigo-600">${Number(book.price).toLocaleString('fa-IR')} تومان</span>`;
-                return `
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
-                        <div class="p-4 flex flex-col flex-grow">
-                            <img src="${book.coverimage || 'https://placehold.co/400x600/E2E8F0/A0AEC0?text=Book'}" class="w-full h-48 object-cover rounded-md mb-4">
-                            <span class="text-sm text-slate-500">${book.category || 'بدون دسته‌بندی'}</span>
-                            <h3 class="text-xl font-bold text-slate-800 mt-1">${book.title}</h3>
-                            <p class="text-slate-600 mt-1">${book.author}</p>
-                            <div class="mt-4 flex justify-between items-center">
-                                ${priceText}
-                                <div class="flex gap-3">
-                                    <button onclick="editBook('${book.id}')" class="text-blue-500 hover:text-blue-700"><i class="fas fa-pencil-alt"></i></button>
-                                    <button onclick="deleteItem('${book.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
-                                </div>
+            DOMElements.booksList.innerHTML = books.map(book => `
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden flex flex-col">
+                    <div class="p-4 flex flex-col flex-grow">
+                        <img src="${book.coverimage || 'https://placehold.co/400x600/CBD5E1/475569?text=Book'}" class="w-full h-48 object-cover rounded-md mb-4">
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">${book.title}</h3>
+                        <p class="text-slate-600 dark:text-slate-400 mt-1">${book.author}</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="font-bold text-indigo-600 dark:text-indigo-400">${Number(book.price || 0).toLocaleString('fa-IR')} تومان</span>
+                            <div class="flex gap-3">
+                                <button onclick="editBook('${book.id}')" class="text-blue-400 hover:text-blue-600"><i class="fas fa-pencil-alt"></i></button>
+                                <button onclick="deleteItem('books', '${book.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </div>
-                    </div>`;
-            }).join('');
-            if (books.length === 0) DOMElements.booksList.innerHTML = '<p class="text-slate-500 col-span-full">کتابی برای نمایش وجود ندارد.</p>';
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-700 p-3 border-t dark:border-slate-600 flex justify-center items-center gap-4">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-300">${book.isactive ? 'فعال' : 'غیرفعال'}</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only toggle-checkbox" ${book.isactive ? 'checked' : ''} onchange="toggleStatus('books', '${book.id}', ${book.isactive})">
+                            <div class="toggle-label w-11 h-6 bg-slate-300 rounded-full toggle-bg"><div class="absolute top-0.5 left-0.5 bg-white border-gray-300 rounded-full h-5 w-5 toggle-dot"></div></div>
+                        </label>
+                    </div>
+                </div>`).join('');
+            if (books.length === 0) DOMElements.booksList.innerHTML = '<p class="text-slate-500 dark:text-slate-400 col-span-full text-center">کتابی برای نمایش وجود ندارد.</p>';
         };
         
+        const renderPosts = (posts) => {
+             DOMElements.postsList.innerHTML = posts.map(post => `
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-slate-200">${post.title}</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">نویسنده: ${post.author}</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                               <span class="text-sm font-medium text-slate-600 dark:text-slate-300">${post.isactive ? 'فعال' : 'غیرفعال'}</span>
+                               <label class="relative inline-flex items-center cursor-pointer">
+                                   <input type="checkbox" class="sr-only toggle-checkbox" ${post.isactive ? 'checked' : ''} onchange="toggleStatus('posts', '${post.id}', ${post.isactive})">
+                                   <div class="toggle-label w-11 h-6 bg-slate-300 rounded-full toggle-bg"><div class="absolute top-0.5 left-0.5 bg-white border-gray-300 rounded-full h-5 w-5 toggle-dot"></div></div>
+                               </label>
+                           </div>
+                           <div class="flex justify-end gap-3">
+                               <button onclick="editPost('${post.id}')" class="text-blue-400 hover:text-blue-600"><i class="fas fa-pencil-alt"></i></button>
+                               <button onclick="deleteItem('posts', '${post.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
+                           </div>
+                        </div>
+                    </div>
+                </div>
+             `).join('');
+            if (posts.length === 0) DOMElements.postsList.innerHTML = '<p class="text-slate-500 dark:text-slate-400 col-span-full text-center">پستی برای نمایش وجود ندارد.</p>';
+        };
+
         DOMElements.bookForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('book-id').value;
@@ -228,9 +321,28 @@
             try {
                 await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bookData) });
                 DOMElements.bookFormTitle.textContent = 'افزودن کتاب جدید';
-                renderBookForm(); // Clear form
-                loadInitialData(); // Reload list
+                DOMElements.bookForm.reset();
+                loadInitialData();
             } catch (error) { console.error('Book submit error:', error); }
+        });
+        
+        DOMElements.postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('post-id').value;
+            const postData = {
+                title: document.getElementById('post-title').value,
+                author: document.getElementById('post-author').value,
+                coverImage: document.getElementById('post-coverImage').value,
+                content: document.getElementById('post-content').value,
+            };
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${POSTS_ENDPOINT}/${id}` : POSTS_ENDPOINT;
+            try {
+                await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(postData) });
+                DOMElements.postFormTitle.textContent = 'افزودن پست جدید';
+                DOMElements.postForm.reset();
+                loadInitialData();
+            } catch (error) { console.error('Post submit error:', error); }
         });
 
         window.editBook = async (id) => {
@@ -238,15 +350,30 @@
             if (book) renderBookForm(book);
         };
         
-        window.deleteItem = deleteItem; // Make deleteItem globally accessible
-
-        const loadInitialData = async () => {
-             const books = await fetchData(BOOKS_ENDPOINT);
-             renderBooks(books);
+        window.editPost = async (id) => {
+            const post = await fetchData(`${POSTS_ENDPOINT}/${id}`);
+            if(post) renderPostForm(post);
         };
         
-        // Initial setup
+        window.deleteItem = deleteItem;
+
+        const loadInitialData = async () => {
+            const activeView = DOMElements.navBooks.classList.contains('active') ? 'books' : 'posts';
+            if (activeView === 'books') {
+                const books = await fetchData(BOOKS_ENDPOINT);
+                renderBooks(books);
+            } else {
+                const posts = await fetchData(POSTS_ENDPOINT);
+                renderPosts(posts);
+            }
+        };
+        
+        // --- شروع اصلاحیه ---
+        // این توابع باید در ابتدای کار فراخوانی شوند تا فرم‌ها ساخته شوند
         renderBookForm();
+        renderPostForm();
+        // --- پایان اصلاحیه ---
+        
         checkAuth();
     });
     </script>
