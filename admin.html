@@ -205,7 +205,7 @@
                     {id: 'book-author', placeholder: 'نویسنده', required: true},
                     {id: 'book-category', placeholder: 'دسته‌بندی'},
                     {id: 'book-price', placeholder: 'قیمت (تومان)', type: 'number'},
-                    {id: 'book-coverImage', placeholder: 'آدرس عکس جلد (URL)', type: 'url'},
+                    {id: 'book-coverimage', placeholder: 'آدرس عکس جلد (URL)', type: 'url'},
                     {id: 'book-description', placeholder: 'توضیحات...', type: 'textarea'},
                 ])}
                 <div class="flex items-center gap-4 pt-2">
@@ -218,7 +218,7 @@
                 document.getElementById('book-author').value = book.author || '';
                 document.getElementById('book-category').value = book.category || '';
                 document.getElementById('book-price').value = book.price || '';
-                document.getElementById('book-coverImage').value = book.coverimage || '';
+                document.getElementById('book-coverimage').value = book.coverimage || '';
                 document.getElementById('book-description').value = book.description || '';
                 DOMElements.bookFormTitle.textContent = 'ویرایش کتاب';
                 document.getElementById('book-cancel-btn').addEventListener('click', () => {
@@ -234,7 +234,7 @@
                 ${createFormFields([
                     {id: 'post-title', placeholder: 'عنوان پست', required: true},
                     {id: 'post-author', placeholder: 'نویسنده'},
-                    {id: 'post-coverImage', placeholder: 'آدرس عکس کاور (URL)', type: 'url'},
+                    {id: 'post-coverimage', placeholder: 'آدرس عکس کاور (URL)', type: 'url'},
                     {id: 'post-content', placeholder: 'محتوای پست...', type: 'textarea', rows: 6},
                 ])}
                 <div class="flex items-center gap-4 pt-2">
@@ -245,7 +245,7 @@
             if(post.id) {
                 document.getElementById('post-title').value = post.title || '';
                 document.getElementById('post-author').value = post.author || '';
-                document.getElementById('post-coverImage').value = post.coverimage || '';
+                document.getElementById('post-coverimage').value = post.coverimage || '';
                 document.getElementById('post-content').value = post.content || '';
                 DOMElements.postFormTitle.textContent = 'ویرایش پست';
                 document.getElementById('post-cancel-btn').addEventListener('click', () => {
@@ -314,8 +314,7 @@
                 author: document.getElementById('book-author').value,
                 category: document.getElementById('book-category').value,
                 price: parseFloat(document.getElementById('book-price').value) || null,
-                coverImage: document.getElementById('book-coverImage').value,
-                description: document.getElementById('book-description').value,
+                coverimage: document.getElementById('book-coverimage').value, // Corrected
             };
             const method = id ? 'PUT' : 'POST';
             const url = id ? `${BOOKS_ENDPOINT}/${id}` : BOOKS_ENDPOINT;
@@ -333,7 +332,7 @@
             const postData = {
                 title: document.getElementById('post-title').value,
                 author: document.getElementById('post-author').value,
-                coverImage: document.getElementById('post-coverImage').value,
+                coverimage: document.getElementById('post-coverimage').value, // Corrected
                 content: document.getElementById('post-content').value,
             };
             const method = id ? 'PUT' : 'POST';
